@@ -13,6 +13,8 @@ contract SimpleStorageFunction {
 
     Person[] public listOfPeople; //[]
 
+    mapping (string => uint256) public nameToFavoriteNumber;
+
     // Person public pat = Person({favoriteNumber: 7, name: "Pat"});
     // Person public mariah = Person({favoriteNumber: 79, name: "Marial"});
     // Person public jon = Person({favoriteNumber: 5, name: "Jon"});
@@ -27,7 +29,8 @@ contract SimpleStorageFunction {
         return myFavoriteNumber;
     }
 
-    function addPerson(string memory name, uint256 _favoriteNumber) public {
-        listOfPeople.push(Person(_favoriteNumber, name));
+    function addPerson(string calldata _name, uint256 _favoriteNumber) public {
+        listOfPeople.push(Person(_favoriteNumber, _name));
+        nameToFavoriteNumber[_name] = _favoriteNumber;
     }
 }
