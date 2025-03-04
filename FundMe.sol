@@ -12,6 +12,12 @@ contract FundMe {
     address[] public funders;
     mapping(address funder => uint256 amountFunded) public addressToAmountFunded;
 
+    address public owner;
+
+    constructor() {
+       owner = msg.sender;
+    }
+
     function fund() public payable {
         require(msg.value.getConvertionRate() >= minumumFund, "Din't send enough ETH");
         funders.push(msg.sender);
@@ -19,6 +25,7 @@ contract FundMe {
     }
 
     function withdraw() public {
+        require(msg.sender == owner, "Must be owner!");
         for (uint256 idx = 0; idx < funders.length; idx++) {
             address funder = funders[idx];
             addressToAmountFunded[funder] = 0;
