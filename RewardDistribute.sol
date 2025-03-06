@@ -1,29 +1,23 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.26;
+pragma solidity ^0.8.0;
 
-contract RewardDistributor {
-    address[] public recipients;
+contract Crowdfunding {
+    mapping(address => uint256) public balances;
 
-    function addRecipient(address _recipient) external {
-        recipients.push(_recipient);
-    }
-
-    function distributeRewards() external {
-        uint256 totalRecipients = recipients.length;
-        require(totalRecipients > 0, "No recipients");
-
-        uint256 totalBalance = address(this).balance;
-        require(totalBalance > 0, "No balance to distribute");
-
-        uint256 amount = totalBalance / totalRecipients;
-
-        for (uint256 i = 0; i < totalRecipients; i++) {
-            (bool success, ) = recipients[i].call{value: amount}("");
-            require(success, "Transfer failed");
+    function donate() external payable {
+        require(msg.value > 0, "Must send ETH");
+        unchecked {
+            balances[msg.sender] += msg.value;
         }
     }
-    function getBalance() external view returns (uint256) {
-        return address(this).balance;
+
+    function withdraw() external {
+        uint256 amount = balances[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+
+        balances[msg.sender] = 0;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Withdraw failed");
     }
-    receive() external payable {}
 }
